@@ -19,7 +19,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import jp.co.mixi.androidtraining.todo.R
+import jp.co.mixi.androidtraining.todo.ToDoViewModel
 import jp.co.mixi.androidtraining.todo.data.entity.Task
 
 @Composable
@@ -30,23 +32,19 @@ fun ToDoScreen(
     var tasks by remember { mutableStateOf(emptyList<Task>()) }
     var inputText by remember { mutableStateOf("") }
 
+    val viewModel: ToDoViewModel = viewModel()
+    val uiState = viewModel.uiState
+
     Column(modifier = modifier) {
         TaskList(
-            tasks = tasks,
+            tasks = uiState.tasks,
             modifier = Modifier.weight(1f),
         )
 
         TaskTextField(
-            value = inputText,
-            onValueChange = { value ->
-                // TODO ViewModelにイベントを送る
-                inputText = value
-            },
-            onAddButtonClick = {
-                // TODO ViewModelにイベントを送る
-                tasks = listOf(Task(title = inputText)) + tasks
-                inputText = ""
-            },
+            value = uiState.inputText,
+            onValueChange = viewModel::setInputText,
+            onAddButtonClick = viewModel::addTask,
             modifier = Modifier.fillMaxWidth(),
         )
     }
